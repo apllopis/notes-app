@@ -1,45 +1,39 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState } from "react"
+import { Link, BrowserRouter, Route, Switch } from 'react-router-dom'
+import Notes from './pages/Notes'
 
 const Home = () => <h1>Home page</h1>
-
-const Notes = () => <h1>Notes page</h1>
-
 const Users = () => <h1>Users page</h1>
 
 const inlineStyles = {
   padding: 5
 }
 const App = () => {
-  const [page, setPage] = useState(() => {
-    const { pathname } = window.location
-    const page = pathname.slice(1)
-    return page
-  })
 
-  const getContent = () => {
-    if (page === 'users') {
-      return <Users />
-    } else if (page === 'notes') {
-      return <Notes />
-    } else {
-      return <Home />
-    }
-  }
-  const toPage = page => event => {
-    window.history.pushState(null, '', `/${page}`)
-    event.preventDefault()
-    setPage(page)
-  }
+
+  /** El compnente router envuelve a toda la aplicación  */
   return (
-    <div>
+    <BrowserRouter>
       <header>
-        <a href='#' onClick={toPage('home')} style={inlineStyles}>Home</a>
-        <a href='#' onClick={toPage('notes')} style={inlineStyles}>Notes</a>
-        <a href='#' onClick={toPage('users')} style={inlineStyles}>Users</a>
+        <Link to='/' style={inlineStyles}>Home</Link>
+        <Link to='/notes' style={inlineStyles}>Notes</Link>
+        <Link to='/users' style={inlineStyles}>Users</Link>
       </header>
-      {getContent()}
-    </div>
+      <Switch>
+        <Route path='/notes/:id'>
+          <h1> Nota por Id</h1>
+        </Route>
+        <Route path='/notes'>
+          <Notes />
+        </Route>
+        <Route path='/users'>
+          <Users />
+        </Route>
+        <Route path='/'>
+          <Home />
+        </Route>
+      </Switch>
+    </BrowserRouter>
   )
 }
 export default App

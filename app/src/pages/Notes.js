@@ -6,12 +6,12 @@
  *  import {Note} from "./components/Note.js"
  */
 import { useState, useEffect } from 'react'
-import noteSrv from './services/notes'
-import Notification from './components/Notification'
-import loginSrv from './services/login'
-import LoginForm from './components/LoginForm'
-import NoteForm from './components/NoteForm'
-import NotesShowForm from './components/NotesShowForm'
+import noteSrv from '../services/notes'
+import Notification from '../components/Notification'
+import loginSrv from '../services/login'
+import LoginForm from '../components/LoginForm'
+import NoteForm from '../components/NoteForm'
+import NotesShowForm from '../components/NotesShowForm'
 
 /**  Se pasa una props a App y si no le llega
  * nada se crea como un array vacío
