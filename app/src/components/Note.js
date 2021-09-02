@@ -1,5 +1,5 @@
 /** comno es otra lista distinta tambien hay que poner la key */
-
+import { Link } from "react-router-dom";
 const Note = ({ note, toggleImportance }) => {
   const label = note.important
     ? 'Marcar como no importante'
@@ -7,7 +7,9 @@ const Note = ({ note, toggleImportance }) => {
   return (
     <li className='note'>
       <p>
-        <strong>{note.content}</strong>
+        <Link to={`/notes/${note.id}`}>
+          <strong>{note.content}</strong>
+        </Link>
         <button onClick={toggleImportance}>{label}</button>
       </p>
       <small>

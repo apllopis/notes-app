@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Link, BrowserRouter, Route, Switch } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import NoteDetail from './components/NoteDetail'
 import Notes from './pages/Notes'
-
+import noteSrv from './services/notes'
 const Home = () => <h1>Home page</h1>
 const Users = () => <h1>Users page</h1>
 
@@ -10,7 +12,13 @@ const inlineStyles = {
 }
 const App = () => {
 
-
+  const [notes, setNotes] = useState([])
+  useEffect(() => {
+    noteSrv.getAll()
+      .then(inicialNotas => {
+        setNotes(inicialNotas)
+      })
+  }, [])
   /** El compnente router envuelve a toda la aplicación  */
   return (
     <BrowserRouter>
@@ -21,7 +29,7 @@ const App = () => {
       </header>
       <Switch>
         <Route path='/notes/:id'>
-          <h1> Nota por Id</h1>
+          <NoteDetail notes={notes} />
         </Route>
         <Route path='/notes'>
           <Notes />
