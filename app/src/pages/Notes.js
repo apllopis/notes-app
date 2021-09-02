@@ -1,23 +1,14 @@
-
-/**
- * Si el modulo se exporta como nombrado:
- *  export const Note = () =>{....}
- * se tiene que importar como :
- *  import {Note} from "./components/Note.js"
- */
 import { useState, useEffect } from 'react'
 import noteSrv from '../services/notes'
 import Notification from '../components/Notification'
 import loginSrv from '../services/login'
 import LoginForm from '../components/LoginForm'
 import NoteForm from '../components/NoteForm'
-import NotesShowForm from '../components/NotesShowForm'
+import Note from '../components/Note'
 
-/**  Se pasa una props a App y si no le llega
- * nada se crea como un array vacío
- */
 const Notes = () => {
   const [notas, setNotas] = useState([])
+  const [showAll, setShowAll] = useState(true)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
@@ -27,9 +18,7 @@ const Notes = () => {
     username: '',
     token: null
   })
-  /** Se necesita un useEfect para que al hacer el setNotas
-   * no se vuelva a renderizar el fetch y entre en bucle
-   */
+
   useEffect(() => {
     setLoading(true)
 
@@ -58,9 +47,10 @@ const Notes = () => {
       token: null
     }
     setUser(limpio)
-    noteSrv.setToken(user.token)
+    noteSrv.setToken(null)
     window.localStorage.removeItem('loggedNoteAppUser')
   }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -87,20 +77,29 @@ const Notes = () => {
         setNotas((prevNotas) => prevNotas.concat(returnedNote))
       })
   }
+  const toggleImportanceOf = (id) => {
+    const nota = notas.find(n => n.id === id)
+    const changedNote = { ...nota, important: !nota.important }
 
-  /**
-   * la key en el elemento mas alto en este caso
-   * en el elemnto <Note />
-   *
-   * Se puede sustituir {notes.map((note)={
-   *  return(.....)})}>
-   * por
-   * {notes.map(note=> (.....))}
-   *  si solo está el  return  en la función
-   *
-   * Poner en el campo input value para que react controle el imput
-   * en lugar del DOM
-   */
+    noteSrv
+      .update(id, changedNote)
+      .then(returnedNote => {
+        setNotas(notas.map(nota => nota.id !== id ? nota : returnedNote))
+      })
+      .catch(() => {
+        setErrorMessage(
+          `Nota '${nota.content}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+  }
+
+  const notesToShow = showAll
+    ? notas
+    : notas.filter(note => note.important)
+
   return (
     <div>
       <h1>Mantenimientos</h1>
@@ -110,12 +109,27 @@ const Notes = () => {
         <NoteForm
           addNote={addNote}
         />
-        <NotesShowForm
-          notas={notas}
-          loading={loading}
-          handleLogout={handleLogout}
-        />
+        <div>
+          {loading ? "Cargando..." : ""}
+          <div>
+            <button onClick={handleLogout}>Cerrar Sesión</button>
+          </div>
+          <div>
+            <button onClick={() => setShowAll(!showAll)}>
+              Ver {showAll ? 'solo Importantes' : 'todas'}
+            </button>
+          </div>
 
+        </div>
+        <ul>
+          {notesToShow.map((nota, i) =>
+            <Note
+              key={i}
+              note={nota}
+              toggleImportance={() => toggleImportanceOf(nota.id)}
+            />
+          )}
+        </ul>
       </div>
         : <LoginForm
           username={username}

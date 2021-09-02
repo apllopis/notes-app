@@ -1,14 +1,17 @@
 /** comno es otra lista distinta tambien hay que poner la key */
 
-const Note = ({ content, date }) => {
+const Note = ({ note, toggleImportance }) => {
+  const label = note.important
+    ? 'Marcar como no importante'
+    : 'Marcar como importante'
   return (
-    <li>
+    <li className='note'>
       <p>
-        <strong>{content}</strong>
-        <button>Marcar como importante</button>
+        <strong>{note.content}</strong>
+        <button onClick={toggleImportance}>{label}</button>
       </p>
       <small>
-        <time>{date}</time>
+        <time>{note.date}</time>
       </small>
     </li>
   );
